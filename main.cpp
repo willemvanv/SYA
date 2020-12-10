@@ -17,6 +17,8 @@ void prefix(Node* current);
 char peek(char* a, int top);
 Node* popNode(Node** stack, int* top);
 void buildTree(char* queue, Node** stack, int* front, int* back, int* top);
+void printInfix(Node* current);
+bool isNum(char a);
 //struct I never used
 struct data {
   char a;
@@ -37,7 +39,6 @@ int main() {
   //user input
   cout << "Enter Mathematical Expresion(no spaces)" << endl;
   cin >> input;
-  cout << "Infix: " << input << endl;
   char* arr;
   arr = new char[20];
   int m;
@@ -141,6 +142,8 @@ int main() {
   buildTree(queue, stac, &front, &back, &tops);
   cout << "Prefix: " << stac[0]->getValue() << ' ';
   prefix(stac[0]);
+  cout << endl << "Infix: ";
+  printInfix(stac[0]);
 }
 //Build the tree using the postfix and a Node pointer stack
 void buildTree(char* queue, Node** stack, int* front, int* back, int* top) {
@@ -154,13 +157,30 @@ void buildTree(char* queue, Node** stack, int* front, int* back, int* top) {
     node->setLchild(popNode(stack, top));
     pushNode(stack, top, node);
   }
-  else {
+  else if (isNum(current[0]) == true) {
     pushNode(stack, top, node);
   }
   if (*front < *back) {
     (*front)++;
     buildTree(queue, stack, front, back, top);
   }
+}
+bool isNum(char a) {
+  if (a == '0' || a == '1' || a == '2' || a == '3' || a == '4' || a == '5' || a == '6' || a == '7' || a == '8' || a == '9') {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+//Print infix notation from tree
+void printInfix(Node* current) {
+  if (current == NULL) {
+    return;
+  }
+  printInfix(current->getLchild());
+  cout << current->getValue() << ' ';
+  printInfix(current->getRchild());
 }
 //Prints in prefix form using tree
 void prefix(Node* current) {
@@ -219,8 +239,13 @@ void enqueue(char* a, char* b, int* back) {
 //Pop from a queue
 void dequeue(char* a, int* front, int* back, char* out) {
   int temp = 0;
-  if (a[*front] == ' ') {
-    (*front)++;
+  while (1) {
+    if (a[*front] == ' ') {
+      (*front)++;
+    }
+    else {
+      break;
+    }
   }
   if (isOpp(a[*front]) == true) {
     out[0] = a[*front];
